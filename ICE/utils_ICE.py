@@ -210,10 +210,11 @@ def plot_concept_images(concept_dict, dataloader, S=None, threshold=0.5, backgro
 
     num_concepts = len(concept_dict)
     rows_per_concept = 2 if plot_lowest else 1
+    size = (12, 60) if plot_lowest else (12, 30)
     total_rows = num_concepts * rows_per_concept
     cols = 5
 
-    fig, axes = plt.subplots(total_rows, cols, figsize=(12, 30))
+    fig, axes = plt.subplots(total_rows, cols, figsize=size)
 
     if total_rows == 1:
         axes = np.expand_dims(axes, axis=0)
