@@ -68,8 +68,8 @@ def TCAV_directional_derivative(activation_layer: np.array, layer_name: int, cav
     :param layer_name: name of activation_layer
     :param cav_vector: holds the a concept, shape: 1dim (channels)
     :param epsilon: parameter for the directional derivative, should be small
-    :param model: model used to calculate the predictions, should be an intance with pretrained weights!
-    :param class_k: index of the cth class [0:1000] as model outputs one of the 1000 ImageNet classes
+    :param model: model used to calculate the predictions
+    :param class_k: index of the cth class [0:10] as model outputs one of the 10 Cifar10 classes
     :return: directional_derivatives_C_l: the directional derviative for cav C from layer l as np.array of size: batch_size
     """
     model.eval()
@@ -107,17 +107,18 @@ def TCAV(activation_layer: np.array, layer_name: int, P: np.array, epsilon: floa
         scores[concept_idx] = TCAV_score(derivatives)
     return scores
 
-def plot_TCAV(activation_layer, Concept_Extractor, classes, model, layer_name, epsilon=1e-6, save_path=None):
+def plot_TCAV(activations, Concept_Extractor, classes, model, layer_name, epsilon=1e-6, save_path=None):
     # function to plot the TCAV scores
     fig, axes = plt.subplots(nrows=len(classes), ncols=1, figsize=(10, 20))
     # iterate through each class to calculate the concept presence for this specific class
     for i, ax in enumerate(axes):
-        cav_scores = TCAV(activation_layer,
-                      layer_name = layer_name,
-                      P = Concept_Extractor.P,
-                      epsilon = epsilon,
-                      model = model,
-                      class_k = i)
+        class_activations = activations[i]
+        cav_scores = TCAV(class_activations.clone(),
+                  layer_name = layer_name,
+                  P = Concept_Extractor.P,
+                  epsilon = epsilon,
+                  model = model,
+                  class_k = i)
 
         x_values = range(len(cav_scores))
         x_labels = [i+1 for i in range(len(cav_scores))]
@@ -126,7 +127,7 @@ def plot_TCAV(activation_layer, Concept_Extractor, classes, model, layer_name, e
         ax.set_xlabel('Concepts')
         ax.set_ylabel('TCAV Score')
         ax.set_ylim(0, 1)
-        ax.set_title(f'Class {classes[i]}', fontsize=13)
+        ax.set_title(f'Class {classes[i]} ({class_activations.shape[0]} Samples)', fontsize=13)
 
     # ajust layout
     plt.tight_layout()
@@ -140,10 +141,10 @@ def plot_TCAV(activation_layer, Concept_Extractor, classes, model, layer_name, e
     plt.show()
 
 def calc_avg_concept_presence(top_n, S_list, dataloader, ConceptExtractor): # --> move to utils
-    # Initialize lists to accumulate data across batches
+    # initialize lists to accumulate data across batches
     all_avg_concept_presence = []
 
-    # Iterate over all batches to collect data
+    # iterate over all batches to collect data
     for batch_idx, (data, target) in enumerate(dataloader):
         S = S_list[batch_idx].copy()
         S = S.reshape((
@@ -153,32 +154,31 @@ def calc_avg_concept_presence(top_n, S_list, dataloader, ConceptExtractor): # --
             ConceptExtractor.nr_concepts
         ))
 
-        # Calculate the average concept presence for the current batch
+        # calculate the average concept presence for the current batch
         avg_concept_presence = np.mean(S, axis=(1, 2))  # Shape (batch_size x nr_concepts)
 
-        # Accumulate filenames and corresponding avg concept presence
         all_avg_concept_presence.append(avg_concept_presence)
 
-    # Convert the accumulated concept presence data to a single numpy array
+    # convert the accumulated concept presence data to a single numpy array
     # print(len(all_avg_concept_presence))
     # print(all_avg_concept_presence[0].shape)
     all_avg_concept_presence = np.vstack(all_avg_concept_presence)  # Shape (total_samples x nr_concepts)
     # print("")
     # print(all_avg_concept_presence.shape)
 
-    # Dictionary to store the top n filenames and concept presence for each concept
+    # dictionary to store the top n filenames and concept presence for each concept
     top_n_imgs = {}
 
-    # Calculate the top n indices globally for each concept
+    # calculate the top n indices globally for each concept
     for k in range(all_avg_concept_presence.shape[1]):  # Iterate over each concept (channel)
         sorted_indices_high = np.argsort(all_avg_concept_presence[:, k])[::-1]
         sorted_indices_low = np.argsort(all_avg_concept_presence[:, k])
 
-        # Get the top n indices with the highest and lowest values
+        # get the top n indices with the highest and lowest values
         top_n_indices_high = sorted_indices_high[:top_n]
         top_n_indices_low = sorted_indices_low[:top_n]
 
-        # Store the top n filenames and their corresponding avg concept presence for both high and low
+        # store the top n filenames and their corresponding avg concept presence for both high and low
         top_n_imgs[f"concept_{k}"] = {
             'top_n_high': {
                 'avg_concept_presence': [all_avg_concept_presence[idx, k] for idx in top_n_indices_high],
@@ -196,12 +196,11 @@ def plot_concept_images(concept_dict, dataloader, S=None, threshold=0.5, backgro
     """
     Plots images for each concept showing the top 5 highest and lowest concept presence.
 
-    Args:
-    - concept_dict: Dictionary containing concept presence and indices.
-    - dataloader: PyTorch dataloader containing the images.
-    - S: concept strengths for all images
-    - threshold: threshold for concept strengths
-    - background_alpha: alpha of image regions without concept presence
+    concept_dict: Dictionary containing concept presence and indices.
+    dataloader: PyTorch dataloader containing the images.
+    S: concept strengths for all images
+    threshold: threshold for concept strengths
+    background_alpha: alpha of image regions without concept presence
     """
     classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
