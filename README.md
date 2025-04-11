@@ -3,9 +3,9 @@ Group project for the Trustworthy and Explainable AI course 2025.
 
 ## Towards a Holistic Approach to Model Explainability <br>
 by
-Aapo Kärki s6235905 <> 
-Niklas Magnusson s6222048 <>
-Verena Szojak s6222064
+Aapo Kärki (s6235905), 
+Niklas Magnusson (s6222048)
+Verena Szojak (s6222064)
 
 This repository contains the code for our method experiments. We implemented all our XAI methods in google colab. Thus, we provide the code but also links that open the 
 Jupyter Notebooks in colab such that they are directly executable. Thus, we recommend opening the links to colab 
@@ -21,3 +21,4 @@ and reviewing our code there.
 [![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/GradCAM_Cifar10.ipynb)
 
 - Link to XAI method **XRAI** <br>
+[![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/XRAI.ipynb)
