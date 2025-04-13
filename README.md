@@ -18,7 +18,7 @@ and reviewing our code there.
 [![Open In Colab - ICE](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/ICE/ICE.ipynb)
 
 - Link to XAI method **Grad-CAM** <br> 
-[![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/GradCAM_Cifar10.ipynb)
+[![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/Grad-CAM/GradCAM_Cifar10.ipynb)
 
 - Link to XAI method **XRAI** <br>
-[![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/XRAI.ipynb)
+[![Open In Colab - Grad-CAM](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aapokrki/t_xai_project/blob/main/XRAI/XRAI.ipynb)
